@@ -114,7 +114,6 @@ public class Autotests {
                 exotic,
                 resultSet.getInt("FOOD_EXOTIC"),
                 "Значение поля 'Экзотический' отличается");
-        System.out.println("Запись " + name + " с указанными параметрами найдена");
     }
 
     @И("в БД проверено {string} товара с названием {string}, типом {string}, экзотичностью {int}")
@@ -153,7 +152,6 @@ public class Autotests {
         String insert = "INSERT INTO FOOD VALUES (" + idLast + ",'" + name + "','" + type
                 + "'," + exotic + ")";
         statement.executeUpdate(insert);
-        System.out.println("Добавлен товар с названием " + name);
     }
 
     @И("в БД добавлен {int} товар с названием {string}, типом {string}, экзотичностью {int}")
@@ -174,11 +172,18 @@ public class Autotests {
             }
         }
         Assertions.assertEquals(count, expectingCount, "Количество записей не соответсвует ожидаемому");
-        System.out.println("Найдено " + expectingCount + " записи " + name + " с указанными параметрами");
-    }
+        }
 
     @И("удалена добавленная запись")
-    public void deletingItem() throws SQLException {
+    public void deletingItem()  {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
+        driver.findElement(By.id("navbarDropdown")).click();
+        driver.findElement(By.id("reset")).click();
+    }
+
+    @И("удалена добавленная в БД запись")
+    public void deletingItemDB() throws SQLException {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
         Statement statement = connection.createStatement();
@@ -187,14 +192,11 @@ public class Autotests {
         String nameLast = lastItem.getString("FOOD_NAME");
         String insert = "DELETE FROM FOOD WHERE FOOD_NAME='" + nameLast + "' ";
         statement.executeUpdate(insert);
-        driver.findElement(By.id("navbarDropdown")).click();
-        driver.findElement(By.id("reset")).click();
     }
 
     @AfterAll
     public static void closeConnection() throws SQLException {
         connection.close();
         driver.close();
-        System.out.println("000");
     }
 }
