@@ -1,30 +1,69 @@
 package ibs.steps;
 
 import io.cucumber.java.AfterAll;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.ru.И;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.sql.*;
 import java.time.Duration;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static ibs.utils.PropConst.*;
 
 public class Autotests {
 
-    protected static WebDriver driver = new ChromeDriver();
+    protected static WebDriver driver;
     protected static Connection connection;
+    protected static Properties properties = new Properties();
+
+    @BeforeAll
+    public static void openConnection() throws SQLException {
+        try {
+            properties.load(new FileInputStream(
+                    "src/test/resources/" +
+                            System.getProperty("propFile", "application") + ".properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if ("remote".equalsIgnoreCase(properties.getProperty(TYPE_DRIVER))) {
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            Map<String, Object> selenoidOptions = new HashMap<>();
+            selenoidOptions.put("browserName", properties.getProperty(TYPE_BROWSER));
+            selenoidOptions.put("browserVersion", "109.0");
+            selenoidOptions.put("enableVNC", true);
+            selenoidOptions.put("enableVideo", false);
+            capabilities.setCapability("selenoid:options", selenoidOptions);
+            try {
+                driver = new RemoteWebDriver(
+                        URI.create(properties.getProperty(SELENOID_URL)).toURL(),
+                        capabilities
+                );
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            driver = new ChromeDriver();
+        }
+    }
 
     @И("открыта страница по адресу {string}")
-    public void openPage(String url){
-        System.setProperty("webdriver.chromedriver.driver", "src/test/resources/chromedriver.exe");
+    public void openPage(String url) {
+        System.setProperty("webdriver.chromedriver.driver", "path.chrome.driver.windows");
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(url);
@@ -39,15 +78,15 @@ public class Autotests {
     }
 
     @И("открыта вкладка Товары")
-    public void openPage(){
+    public void openPage() {
         driver.findElement(By.id("navbarDropdown")).click();
         driver.findElement(By.linkText("Товары")).click();
     }
 
-    @И ("выполняется нажатие на элемент {string}")
+    @И("выполняется нажатие на элемент {string}")
     public void clickElement(String elementName) {
         By path = null;
-        switch (elementName){
+        switch (elementName) {
             case "кнопка Добавить":
                 path = By.xpath("//button[@data-toggle='modal']");
                 break;
@@ -134,10 +173,10 @@ public class Autotests {
                 itemExists = true;
             }
         }
-        if(Objects.equals(state, "существует")){
+        if (Objects.equals(state, "существует")) {
             exists = true;
         }
-        return itemExists==exists;
+        return itemExists == exists;
     }
 
     @И("в БД добавлен товар с названием {string}, типом {string}, экзотичностью {int}")
@@ -172,10 +211,10 @@ public class Autotests {
             }
         }
         Assertions.assertEquals(count, expectingCount, "Количество записей не соответсвует ожидаемому");
-        }
+    }
 
     @И("удалена добавленная запись")
-    public void deletingItem()  {
+    public void deletingItem() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
         driver.findElement(By.id("navbarDropdown")).click();
