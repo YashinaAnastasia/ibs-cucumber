@@ -1,5 +1,6 @@
 package ibs.steps;
 
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.ru.И;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
@@ -73,7 +74,7 @@ public class Autotests {
 
     @И("в таблицу добавлен товар с названием {string}, типом {string}, экзотичностью {string}")
     public void checkTable(String name, String type, String exotic) {
-        new WebDriverWait(driver, Duration.ofSeconds(2))
+        new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
 
         WebElement table = driver.findElement(By.xpath("//table"));
@@ -190,4 +191,10 @@ public class Autotests {
         driver.findElement(By.id("reset")).click();
     }
 
+    @AfterAll
+    public static void closeConnection() throws SQLException {
+        connection.close();
+        driver.close();
+        System.out.println("000");
+    }
 }
