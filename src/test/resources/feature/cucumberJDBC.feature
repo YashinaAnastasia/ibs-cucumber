@@ -4,8 +4,8 @@
 Функция: Добавление товара БД
 
   Предыстория:
-    * открыта страница по адресу "http://localhost:8080/"
-    * открыта БД по адресу "jdbc:h2:tcp://localhost:9092/mem:testdb"
+    * открыта страница по адресу "https://qualit.applineselenoid.fvds.ru/"
+    * открыта БД по адресу "jdbc:h2:tcp://qualit.applineselenoid.fvds.ru/mem:testdb"
     * открыта вкладка Товары
 
 @correct

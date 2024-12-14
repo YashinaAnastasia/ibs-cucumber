@@ -25,7 +25,7 @@ public class Autotests {
     @И("открыта страница по адресу {string}")
     public void openPage(String url){
         System.setProperty("webdriver.chromedriver.driver", "src/test/resources/chromedriver.exe");
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(url);
     }
@@ -33,7 +33,7 @@ public class Autotests {
     @И("открыта БД по адресу {string}")
     public void openDB(String url) throws SQLException {
         connection = DriverManager.getConnection(
-                "jdbc:h2:tcp://localhost:9092/mem:testdb",
+                url,
                 "user",
                 "pass");
     }
@@ -196,6 +196,8 @@ public class Autotests {
 
     @AfterAll
     public static void closeConnection() throws SQLException {
+        driver.findElement(By.id("navbarDropdown")).click();
+        driver.findElement(By.id("reset")).click();
         connection.close();
         driver.close();
     }
