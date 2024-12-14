@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -40,6 +41,13 @@ public class Autotests {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        properties.forEach((key, value) -> System.getProperties()
+                .forEach((customUserKey, customUserValue) -> {
+                    if (key.toString().equals(customUserKey.toString()) &&
+                            !value.toString().equals(customUserValue.toString())) {
+                        properties.setProperty(key.toString(), customUserValue.toString());
+                    }
+                }));
         if ("remote".equalsIgnoreCase(properties.getProperty(TYPE_DRIVER))) {
             DesiredCapabilities capabilities = new DesiredCapabilities();
             Map<String, Object> selenoidOptions = new HashMap<>();
@@ -57,13 +65,23 @@ public class Autotests {
                 throw new RuntimeException(e);
             }
         } else {
-            driver = new ChromeDriver();
+            switch (properties.getProperty(TYPE_BROWSER)) {
+                case "firefox":
+                    System.setProperty("webdriver.gecko.driver", properties.getProperty("path.gecko.driver.windows"));
+                    driver = new FirefoxDriver();
+                    break;
+                case "chrome":
+                    System.setProperty("webdriver.chrome.driver", properties.getProperty("path.chrome.driver.windows"));
+                    driver = new ChromeDriver();
+                    break;
+                default:
+                    Assertions.fail("Типа браузера '" + properties.getProperty("type.browser") + "' не существует во фреймворке");
+            }
         }
     }
 
     @И("открыта страница по адресу {string}")
     public void openPage(String url) {
-        System.setProperty("webdriver.chromedriver.driver", "path.chrome.driver.windows");
         driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(url);
