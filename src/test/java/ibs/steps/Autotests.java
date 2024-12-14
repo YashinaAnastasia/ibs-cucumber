@@ -33,7 +33,7 @@ public class Autotests {
     protected static Properties properties = new Properties();
 
     @BeforeAll
-    public static void openConnection() throws SQLException {
+    public static void openConnection() throws SQLException, MalformedURLException {
         try {
             properties.load(new FileInputStream(
                     "src/test/resources/" +
@@ -50,20 +50,16 @@ public class Autotests {
                 }));
         if ("remote".equalsIgnoreCase(properties.getProperty(TYPE_DRIVER))) {
             DesiredCapabilities capabilities = new DesiredCapabilities();
-            Map<String, Object> selenoidOptions = new HashMap<>();
-            selenoidOptions.put("browserName", properties.getProperty(TYPE_BROWSER));
-            selenoidOptions.put("browserVersion", "109.0");
-            selenoidOptions.put("enableVNC", true);
-            selenoidOptions.put("enableVideo", false);
-            capabilities.setCapability("selenoid:options", selenoidOptions);
-            try {
-                driver = new RemoteWebDriver(
-                        URI.create(properties.getProperty(SELENOID_URL)).toURL(),
-                        capabilities
-                );
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+            capabilities.setCapability("browserName", properties.getProperty(TYPE_BROWSER));
+            capabilities.setCapability("browserVersion", "109.0");
+            capabilities.setCapability("selenoid:options", Map.<String, Object>of(
+                    "enableVNC", true,
+                    "enableVideo", false
+            ));
+            driver = new RemoteWebDriver(
+                    URI.create((properties.getProperty(SELENOID_URL))).toURL(),
+                    capabilities
+            );
         } else {
             switch (properties.getProperty(TYPE_BROWSER)) {
                 case "firefox":
