@@ -64,7 +64,7 @@ public class Autotests {
     @И("открыта страница по адресу {string}")
     public void openPage(String url) {
         System.setProperty("webdriver.chromedriver.driver", "path.chrome.driver.windows");
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(url);
     }
@@ -113,7 +113,7 @@ public class Autotests {
 
     @И("в таблицу добавлен товар с названием {string}, типом {string}, экзотичностью {string}")
     public void checkTable(String name, String type, String exotic) {
-        new WebDriverWait(driver, Duration.ofSeconds(5))
+        new WebDriverWait(driver, Duration.ofSeconds(2))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
 
         WebElement table = driver.findElement(By.xpath("//table"));
@@ -215,7 +215,7 @@ public class Autotests {
 
     @И("удалена добавленная запись")
     public void deletingItem() {
-        new WebDriverWait(driver, Duration.ofSeconds(5))
+        new WebDriverWait(driver, Duration.ofSeconds(2))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//table")));
         driver.findElement(By.id("navbarDropdown")).click();
         driver.findElement(By.id("reset")).click();
