@@ -16,6 +16,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ibs.utils.PropConst.*;
+import static io.cucumber.core.options.Constants.FILTER_TAGS_PROPERTY_NAME;
 
 public class Autotests {
 
@@ -33,14 +35,11 @@ public class Autotests {
     protected static Properties properties = new Properties();
 
     @BeforeAll
-    public static void openConnection() throws SQLException, MalformedURLException {
-        try {
-            properties.load(new FileInputStream(
+    public static void openConnection() throws SQLException, IOException {
+       properties.load(new FileInputStream(
                     "src/test/resources/" +
                             System.getProperty("propFile", "application") + ".properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         properties.forEach((key, value) -> System.getProperties()
                 .forEach((customUserKey, customUserValue) -> {
                     if (key.toString().equals(customUserKey.toString()) &&
@@ -48,6 +47,7 @@ public class Autotests {
                         properties.setProperty(key.toString(), customUserValue.toString());
                     }
                 }));
+
         if ("remote".equalsIgnoreCase(properties.getProperty(TYPE_DRIVER))) {
             DesiredCapabilities capabilities = new DesiredCapabilities();
             capabilities.setCapability("browserName", properties.getProperty(TYPE_BROWSER));
