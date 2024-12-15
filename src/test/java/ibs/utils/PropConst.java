@@ -8,6 +8,4 @@ public class PropConst {
 
     public static final String SELENOID_URL = "selenoid.url";
 
-
-
 }
