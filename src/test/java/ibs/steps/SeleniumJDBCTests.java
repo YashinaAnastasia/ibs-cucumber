@@ -16,9 +16,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.sql.*;
 import java.time.Duration;
@@ -26,9 +24,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static ibs.utils.PropConst.*;
-import static io.cucumber.core.options.Constants.FILTER_TAGS_PROPERTY_NAME;
 
-public class Autotests {
+public class SeleniumJDBCTests {
 
     protected static WebDriver driver;
     protected static Connection connection;
